@@ -179,6 +179,9 @@ func (co *PeerConnection) Start() error {
 		}
 	} else {
 		for _, codec := range incomingVideoCodecs {
+			if codec.MimeType != webrtc.MimeTypeH264 {
+				continue
+			}
 			err := mediaEngine.RegisterCodec(codec, webrtc.RTPCodecTypeVideo)
 			if err != nil {
 				return err
