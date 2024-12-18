@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -43,6 +44,15 @@ func TracksAreValid(medias []*sdp.MediaDescription) error {
 				return fmt.Errorf("only a single video and a single audio track are supported")
 			}
 			videoTrack = true
+			for _, attribute := range media.Attributes {
+				// Look for RTP map attributes to find codec info
+				if attribute.Key == "rtpmap" {
+					codec := attribute.Value
+					if !strings.Contains(strings.ToLower(codec), "h264") {
+						return fmt.Errorf("codec %s is not allowed", codec)
+					}
+				}
+			}
 
 		case "audio":
 			if audioTrack {
