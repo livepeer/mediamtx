@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	analyzePeriod = 2 * time.Second
+	analyzePeriod = time.Duration(2.5 * float64(time.Second))
 )
 
 // OnDataAV1Func is the prototype of the callback passed to OnDataAV1().
@@ -487,7 +487,9 @@ func (r *Reader) readTracks() (map[uint8]format.Format, map[uint8]format.Format,
 			}
 		}
 
-		if (curTime - startTime) >= analyzePeriod {
+		if (curTime-startTime) >= analyzePeriod ||
+			// Early stop at just 1 audio and 1 video track for now
+			(len(videoTracks) > 0 && len(audioTracks) > 0) {
 			break
 		}
 	}
